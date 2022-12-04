@@ -95,48 +95,48 @@ def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
                     hand_side = hand_side_label[str(hand_side_index)]
 
                     # Get information of index finger pip
-                    index_finger_mcp = results.multi_hand_landmarks[hand_idx].landmark[7]
-                    index_mcp_x = int(index_finger_mcp.x * depth_image_width)
-                    index_mcp_y = int(index_finger_mcp.y * depth_image_height)
-                    if index_mcp_x >= depth_image_width:
-                        index_mcp_x = depth_image_width - 1
-                    if index_mcp_y >= depth_image_height:
-                        index_mcp_y = depth_image_height - 1
+                    index_finger_one = results.multi_hand_landmarks[hand_idx].landmark[7]
+                    index_one_x = int(index_finger_one.x * depth_image_width)
+                    index_one_y = int(index_finger_one.y * depth_image_height)
+                    if index_one_x >= depth_image_width:
+                        index_one_x = depth_image_width - 1
+                    if index_one_y >= depth_image_height:
+                        index_one_y = depth_image_height - 1
 
                     # Get information of index finger tip
-                    index_finger_tip = results.multi_hand_landmarks[hand_idx].landmark[8]
-                    index_tip_x = int(index_finger_tip.x * depth_image_width)
-                    index_tip_y = int(index_finger_tip.y * depth_image_height)
-                    if index_tip_x >= depth_image_width:
-                        index_tip_x = depth_image_width - 1
-                    if index_tip_y >= depth_image_height:
-                        index_tip_y = depth_image_height - 1
+                    index_finger_two = results.multi_hand_landmarks[hand_idx].landmark[8]
+                    index_two_x = int(index_finger_two.x * depth_image_width)
+                    index_two_y = int(index_finger_two.y * depth_image_height)
+                    if index_two_x >= depth_image_width:
+                        index_two_x = depth_image_width - 1
+                    if index_two_y >= depth_image_height:
+                        index_two_y = depth_image_height - 1
 
-                    # Get distance of index_finger_mcp and index_finger_tip
-                    index_mcp_dis = float(depth_image_flipped[index_mcp_y,
-                                                              index_mcp_x] * rs_camera.depth_scale)  # meters
-                    # index_mcp_dis_feet = index_mcp_dis * 3.281  # feet
+                    # Get distance of index_finger_one and index_finger_two
+                    index_one_dis = float(depth_image_flipped[index_one_y,
+                                                              index_one_x] * rs_camera.depth_scale)  # meters
+                    # index_one_dis_feet = index_one_dis * 3.281  # feet
 
-                    # index_tip_dis = float(depth_image_flipped[index_tip_y,
-                    #                                           index_tip_x] * rs_camera.depth_scale)  # meters
-                    # index_tip_dis_feet = index_tip_dis * 3.281  # feet
+                    # index_two_dis = float(depth_image_flipped[index_two_y,
+                    #                                           index_two_x] * rs_camera.depth_scale)  # meters
+                    # index_two_dis_feet = index_two_dis * 3.281  # feet
 
                     # Convert 2D -> 3D and 3D -> 2D
                     if flag_detect_screen == False:
                         rs_camera.projection_pixel_point()
 
                     # --------------- INDEX FINGER -------------------
-                    index_mcp_depth_pixel = [index_mcp_x, index_mcp_y]
-                    index_mcp_depth_point = rs.rs2_deproject_pixel_to_point(
-                        rs_camera.depth_intrin, index_mcp_depth_pixel, index_mcp_dis)
-                    # index_mcp_color_point = rs.rs2_transform_point_to_point(rs_camera.depth_to_color_extrin, index_mcp_depth_point)
-                    # index_mcp_color_pixel = rs.rs2_project_point_to_pixel(rs_camera.color_intrin, index_mcp_color_point)
+                    index_one_depth_pixel = [index_one_x, index_one_y]
+                    index_one_depth_point = rs.rs2_deproject_pixel_to_point(
+                        rs_camera.depth_intrin, index_one_depth_pixel, index_one_dis)
+                    # index_one_color_point = rs.rs2_transform_point_to_point(rs_camera.depth_to_color_extrin, index_one_depth_point)
+                    # index_one_color_pixel = rs.rs2_project_point_to_pixel(rs_camera.color_intrin, index_one_color_point)
 
-                    index_tip_depth_pixel = [index_tip_x, index_tip_y]
-                    index_tip_depth_point = rs.rs2_deproject_pixel_to_point(
-                        rs_camera.depth_intrin, index_tip_depth_pixel, index_mcp_dis)
-                    # index_tip_color_point = rs.rs2_transform_point_to_point(rs_camera.depth_to_color_extrin, index_tip_depth_point)
-                    # index_tip_color_pixel = rs.rs2_project_point_to_pixel(rs_camera.color_intrin, index_tip_color_point)
+                    index_two_depth_pixel = [index_two_x, index_two_y]
+                    index_two_depth_point = rs.rs2_deproject_pixel_to_point(
+                        rs_camera.depth_intrin, index_two_depth_pixel, index_one_dis)
+                    # index_two_color_point = rs.rs2_transform_point_to_point(rs_camera.depth_to_color_extrin, index_two_depth_point)
+                    # index_two_color_pixel = rs.rs2_project_point_to_pixel(rs_camera.color_intrin, index_two_color_point)
 
                     # --------------- SCREEN COORDINATES -------------------
                     if flag_detect_screen == False:
@@ -180,7 +180,7 @@ def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
 
                     # ----------------- Find equation of line and plane in 3D space ----------
                     line_coeff = equation_line_Oxyz(
-                        point_1=index_mcp_depth_point, point_2=index_tip_depth_point)
+                        point_1=index_one_depth_point, point_2=index_two_depth_point)
                     intersection_point = intersection_line_plane_Oxyz(
                         line_coeff=line_coeff, plane_coeff=plane_coeff)
 
@@ -208,7 +208,7 @@ def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
                                        color=(255, 0, 0), thickness=5)
 
                     # ------------------- Draw information on image -------------------
-                    images = cv2.putText(images, f"{hand_side} Hand Distance: ({index_mcp_dis:0.3} m) away",
+                    images = cv2.putText(images, f"{hand_side} Hand Distance: ({index_one_dis:0.3} m) away",
                                          coord_hand_distance, font, font_scale, color, thickness, cv2.LINE_AA)
                     images = cv2.putText(
                         images, f"Hands: {number_of_hands}", coord_num_hands, font, font_scale, color, thickness, cv2.LINE_AA)
@@ -259,6 +259,10 @@ def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
 
 def click_mouse(ratio_pixel_queue, ratio_pixel_lock):
     py_mouse = PyMouse()
+    n_steps = 3
+    prev_coord_x, prev_coord_y = None, None
+    time_start = dt.datetime.today().timestamp()
+
     while True:
         if not ratio_pixel_queue.empty():
             ratio_pixel_lock.acquire()
@@ -270,12 +274,30 @@ def click_mouse(ratio_pixel_queue, ratio_pixel_lock):
             if (ratio_x >= 0) and (ratio_x <= 1) and (ratio_y >= 0) and (ratio_y <= 1):
                 coord_x = int(ratio_x * screen_width)
                 coord_y = int(ratio_y * screen_height)
-                print("\n\n--------- Absolute coordinates on the screen: ",
-                      coord_x, coord_y)
+                # print("\n\n--------- Absolute coordinates on the screen: ",
+                #       coord_x, coord_y)
+                # print("Previous point: ", prev_coord_x, prev_coord_y)
+
+                if prev_coord_x is not None:
+                    coord_x_diff = coord_x - prev_coord_x
+                    coord_y_diff = coord_y - prev_coord_y
+
+                    for idx in range(n_steps):
+                        new_x = int(prev_coord_x + coord_x_diff * (idx / 3))
+                        new_y = int(prev_coord_y + coord_y_diff * (idx / 3))
+                        py_mouse.move(new_x, new_y)
 
                 # py_mouse.move(coord_x, coord_y)
                 py_mouse.click(coord_x, coord_y, 1)
-                # py_keyboard.type_string("X: " + str(coord_x) + "   Y: " + str(coord_y))
+
+                prev_coord_x = coord_x
+                prev_coord_y = coord_y
+                time_start = dt.datetime.today().timestamp()
+
+        time_diff = dt.datetime.today().timestamp() - time_start
+        if time_diff > 20:
+            prev_coord_x = None
+            prev_coord_y = None
 
 
 if __name__ == "__main__":
