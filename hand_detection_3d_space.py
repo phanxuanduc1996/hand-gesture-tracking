@@ -173,10 +173,10 @@ def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
 
                         if (math.fabs(plane_coeff[0] * screen_br_point[0] + plane_coeff[1] * screen_br_point[1] + plane_coeff[2] * screen_br_point[2] + plane_coeff[3]) <= 1e-4):
                             flag_detect_screen = True
-                        #     print("\nPoint 4 is in plane")
-                        # else:
-                        #     print("\nPoint 4 is not in plane : {}".format(
-                        #         plane_coeff[0] * screen_br_point[0] + plane_coeff[1] * screen_br_point[1] + plane_coeff[2] * screen_br_point[2] + plane_coeff[3]))
+                            print("\nPoint 4 is in plane")
+                        else:
+                            print("\nPoint 4 is not in plane : {}".format(
+                                plane_coeff[0] * screen_br_point[0] + plane_coeff[1] * screen_br_point[1] + plane_coeff[2] * screen_br_point[2] + plane_coeff[3]))
 
                     # ----------------- Find equation of line and plane in 3D space ----------
                     line_coeff = equation_line_Oxyz(
