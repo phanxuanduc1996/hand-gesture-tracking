@@ -1,0 +1,8 @@
+numpy
+opencv-python
+pymouse
+unix
+PyUserInput
+mediapipe
+pyrealsense2
+shapely
