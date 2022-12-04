@@ -23,6 +23,10 @@ screen_tr_pixel = [753, 223]
 screen_bl_pixel = [331, 656]
 screen_br_pixel = [816, 506]
 
+# Screen size
+screen_width = 1920
+screen_height = 1080
+
 
 def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -262,11 +266,10 @@ def click_mouse(ratio_pixel_queue, ratio_pixel_lock):
             ratio_pixel_lock.release()
 
             ratio_x, ratio_y = ratio_pixel[0], ratio_pixel[1]
-            img_w, img_h = 1920, 1080
 
             if (ratio_x >= 0) and (ratio_x <= 1) and (ratio_y >= 0) and (ratio_y <= 1):
-                coord_x = int(ratio_x * img_w)
-                coord_y = int(ratio_y * img_h)
+                coord_x = int(ratio_x * screen_width)
+                coord_y = int(ratio_y * screen_height)
                 print("\n\n--------- Absolute coordinates on the screen: ",
                       coord_x, coord_y)
 
