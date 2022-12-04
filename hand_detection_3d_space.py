@@ -16,6 +16,13 @@ import threading
 import multiprocessing as mp
 from concurrent.futures import ThreadPoolExecutor
 
+# Screen coordinates in frame.
+# ------------- CHANGE VALUE ----------------
+screen_tl_pixel = [252, 144]
+screen_tr_pixel = [753, 223]
+screen_bl_pixel = [331, 656]
+screen_br_pixel = [816, 506]
+
 
 def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -32,11 +39,6 @@ def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
     hands = mp_hands.Hands()
     mp_draw = mediapipe.solutions.drawing_utils
 
-    # Screen coordinates in frame.
-    screen_tl_pixel = [252, 144]
-    screen_tr_pixel = [753, 223]
-    screen_bl_pixel = [331, 656]
-    screen_br_pixel = [816, 506]
     polygon_points = np.array([screen_tl_pixel, screen_tr_pixel,
                                screen_br_pixel, screen_bl_pixel])
 
