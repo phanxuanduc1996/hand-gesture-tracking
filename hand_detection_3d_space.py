@@ -259,7 +259,6 @@ def hand_detection(ratio_pixel_queue, ratio_pixel_lock):
 
 def click_mouse(ratio_pixel_queue, ratio_pixel_lock):
     py_mouse = PyMouse()
-    n_steps = 4
     prev_coord_x, prev_coord_y = None, None
     time_start = dt.datetime.today().timestamp()
 
@@ -281,6 +280,8 @@ def click_mouse(ratio_pixel_queue, ratio_pixel_lock):
                 if prev_coord_x is not None:
                     coord_x_diff = coord_x - prev_coord_x
                     coord_y_diff = coord_y - prev_coord_y
+
+                    n_steps = max(int(coord_x_diff / 50), int(coord_y_diff / 50))
 
                     for idx in range(1, n_steps):
                         new_x = int(prev_coord_x + coord_x_diff * (idx / n_steps))
